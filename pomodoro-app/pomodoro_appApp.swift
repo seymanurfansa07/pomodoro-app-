@@ -8,10 +8,18 @@
 import SwiftUI
 
 @main
-struct pomodoro_app: App {
+struct pomodoro_appApp: App {
+    @StateObject private var settingsStore = SettingsStore()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(settingsStore)
+                .onAppear {
+                    // ÖNEMLİ: delegate burada atanıyor, foreground'da banner için şart
+                    NotificationManager.shared.configure()
+                    NotificationManager.shared.requestAuthorization()
+                }
         }
     }
 }
