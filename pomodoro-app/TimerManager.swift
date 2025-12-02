@@ -2,7 +2,8 @@ import Foundation
 import Combine
 
 class TimerManager: ObservableObject {
-    // Timer’ın durumları
+
+    // Timer'ın durumları
     enum TimerState {
         case idle
         case running
@@ -10,14 +11,24 @@ class TimerManager: ObservableObject {
         case finished
     }
 
-    // Yayınlanan değişkenler (UI bunları gözlemler)
-    @Published var remainingTime: TimeInterval = 25 * 60  // 25 dakika varsayılan
+    // UI'nın gözlemlediği değişkenler
+    @Published var remainingTime: TimeInterval
     @Published var state: TimerState = .idle
 
+    // İç ayarlar
     private var timer: Timer?
-    private var workDuration: TimeInterval = 25 * 60   // 25 dakika
-    private var breakDuration: TimeInterval = 5 * 60   // 5 dakika
+    private let workDuration: TimeInterval
+    private let breakDuration: TimeInterval
     private var isWorkSession: Bool = true
+
+    // Varsayılan: 25 dk çalışma, 5 dk mola
+    init(workDurationMinutes: Int = 25,
+         breakDurationMinutes: Int = 5) {
+
+        self.workDuration = TimeInterval(workDurationMinutes * 60)
+        self.breakDuration = TimeInterval(breakDurationMinutes * 60)
+        self.remainingTime = self.workDuration        // başlangıçta 25 dk
+    }
 
     // MARK: - Timer Kontrolleri
 
@@ -35,16 +46,18 @@ class TimerManager: ObservableObject {
         startTimer()
     }
 
-    /// Timer’ı başlat
+    /// Timer'ı başlat
     private func startTimer() {
         state = .running
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            self.tick()
+
+        // Her 1 saniyede bir tick çalışacak
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.tick()
         }
     }
 
-    /// Her saniyede çağrılan fonksiyon
+    /// Her saniyede çağrılır
     private func tick() {
         guard remainingTime > 0 else {
             timer?.invalidate()
@@ -55,7 +68,7 @@ class TimerManager: ObservableObject {
         remainingTime -= 1
     }
 
-    /// Timer’ı duraklat
+    /// Timer'ı duraklat
     func pause() {
         guard state == .running else { return }
         timer?.invalidate()
@@ -63,17 +76,22 @@ class TimerManager: ObservableObject {
         state = .paused
     }
 
-    /// Timer’ı yeniden başlat (kaldığı yerden devam)
+    /// Duraklatılmış timer'ı devam ettir
     func resume() {
         guard state == .paused else { return }
         startTimer()
     }
 
-    /// Timer’ı sıfırla
+    /// Timer'ı sıfırla (bulunduğu oturuma göre süreyi başa al)
     func reset() {
         timer?.invalidate()
         timer = nil
         remainingTime = isWorkSession ? workDuration : breakDuration
         state = .idle
     }
+
+    deinit {
+        timer?.invalidate()
+    }
 }
+
