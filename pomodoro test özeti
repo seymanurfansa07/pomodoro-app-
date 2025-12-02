@@ -1,0 +1,90 @@
+# Pomodoro iOS Uygulaması  
+Bu proje, Swift ve SwiftUI kullanılarak geliştirilmiş basit ve test odaklı bir Pomodoro zamanlayıcı uygulamasıdır.  
+Proje kapsamında hem zamanlayıcı yönetimi hem de birim testleri (Unit Tests) uygulanmıştır.
+
+---
+
+## 📌 Projenin Amacı  
+Bu uygulamanın amacı, kullanıcının çalışma ve mola sürelerini Pomodoro tekniğine uygun şekilde yönetmesine yardımcı olmaktır.  
+SwiftUI ile UI tasarımı yapılmış, TimerManager sınıfı üzerinden zamanlama mantığı kurulmuş ve tüm kritik fonksiyonlar test edilmiştir.
+
+---
+
+## 🧠 TimerManager Sınıfı  
+TimerManager, zamanlayıcının temel mantığını yöneten sınıftır.  
+Aşağıdaki özellikleri içerir:
+
+- Çalışma süresi ve mola süresini yönetir  
+- Başlat (startWork / startBreak)  
+- Duraklat (pause)  
+- Devam et (resume)  
+- Sıfırla (reset)  
+- Kalan süreyi ve timer durumunu yayınlar (@Published)
+
+### Timer Durumları
+- `idle` – başlangıç durumu  
+- `running` – zamanlayıcı çalışıyor  
+- `paused` – zamanlayıcı duraklatıldı  
+- `finished` – süre bitti  
+
+---
+
+## 🧪 Unit Testler (pomodoro_appTests)  
+Projede TimerManager’ın tüm kritik fonksiyonlarını doğrulayan testler yazılmıştır:
+
+### ✔️ Test Senaryoları
+- **Başlangıç durumu doğrulama:**  
+  - Durum: `idle`  
+  - Süre: çalışma süresi (25 dakika)
+
+- **startWork() testi:**  
+  - Durum: `running`  
+  - Süre: 25 dakika olarak ayarlanmalı
+
+- **startBreak() testi:**  
+  - Durum: `running`  
+  - Süre: 5 dakika olarak ayarlanmalı
+
+- **pause() testi:**  
+  - Durum: `paused`
+
+- **resume() testi:**  
+  - Durum tekrar `running`
+
+- **reset() testi:**  
+  - Durum `idle`  
+  - Süre çalışma süresine geri dönmeli
+
+Tüm testler başarılı şekilde çalışmaktadır. ✔️
+
+---
+
+## 📱 UI Testleri  
+Xcode içinde temel UI testi başarıyla çalıştırılmıştır.  
+Bu test uygulamanın açıldığını doğrulayan örnek bir UI testidir.
+
+---
+
+## 🔧 Kullanılan Teknolojiler  
+- Swift  
+- SwiftUI  
+- XCTest Framework  
+- Combine  
+- Xcode 16  
+- iOS 16+  
+
+---
+
+## ▶️ Uygulamanın Çalıştırılması  
+1. Projeyi bilgisayarına klonla:  
+   ```bash
+   git clone https://github.com/seymanurfansa07/pomodoro-app-.git
+pomodoro-app
+ ├── pomodoro-app (App source files)
+ │   ├── ContentView.swift
+ │   ├── TimerManager.swift
+ │   ├── SettingsView.swift
+ │   ├── NotificationManager.swift
+ │   └── Assets.xcassets
+ ├── pomodoro_appTests (Unit Tests)
+ └── pomodoro_appUITests (UI Tests)
